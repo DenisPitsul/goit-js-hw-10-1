@@ -1,9 +1,7 @@
-import axios from "axios";
 import Notiflix from "notiflix";
 
 import { fetchBreeds, fetchCatByBreed } from './cats-api.js'
-
-axios.defaults.headers.common["x-api-key"] = "live_EMMweeq2QICAbT5CLfdQdJ9b1FPiTLFZWX33hzHmWvi78QSMHQP7JXGXGTotYqMs";
+import { getBreadsSelectMarckup, getCatMarckup } from './createMarckup.js'
 
 const refs = {
     breedsSelect: document.querySelector('.breed-select'),
@@ -21,10 +19,7 @@ function renderBreeds() {
     refs.loaderBackdrop.classList.remove('visually-hidden')
     fetchBreeds()
         .then(data => {
-            const breedsSelectMarkup = data.map(({id, name}) => {
-                return `<option value="${id}">${name}</option>`
-            }).join('');
-            refs.breedsSelect.insertAdjacentHTML('beforeend', breedsSelectMarkup);
+            refs.breedsSelect.insertAdjacentHTML('beforeend', getBreadsSelectMarckup(data));
             refs.loaderBackdrop.classList.add('visually-hidden')
         })
         .catch(erorr => {
@@ -40,16 +35,8 @@ function renderCatByBreed(breedId) {
             const name = data[0].breeds[0].name;
             const description = data[0].breeds[0].description;
             const temperament = data[0].breeds[0].temperament;
-            
-            const catMarkup = `
-                <img class="cat-image" src="${img}" alt="${name}">
-                <div class="cat-info-container">
-                    <h2 class="cat-name">${name}</h2>
-                    <p class="cat-temperament"><span>Temperament: </span>${temperament}</p>
-                    <p class="cat-description">${description}</p>
-                </div>
-            `
-            refs.catInfo.innerHTML = catMarkup;
+
+            refs.catInfo.innerHTML = getCatMarckup(img, name, description, temperament);
             refs.loaderBackdrop.classList.add('visually-hidden')
         })
         .catch(erorr => {
